@@ -4,7 +4,7 @@
 */
 
 'use strict';
-import * as Objects from 'src/objects.js';
+import * as Objects from '../src/objects.js';
 
 // showWatermark = false;
 // showSplashScreen = true;
