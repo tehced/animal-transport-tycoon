@@ -6,15 +6,6 @@ class Cursor extends EngineObject {
 
         this.renderOrder = 20
     }
-
-    update()
-    {
-        // this.pos.x = mousePos.x;
-        // this.pos.y = mousePos.y;
-
-        // this.pos.x = clamp(this.pos.x, this.size.x / 2, levelSize.x - this.size.x / 2);
-        // this.pos.y = clamp(this.pos.y, this.size.y / 2, levelSize.y - this.size.y / 2);
-    }
 }
 
 class Button extends EngineObject {
@@ -68,7 +59,7 @@ class Button extends EngineObject {
 }
 
 class StartButton extends Button {
-    constructor(pos, cursor) 
+    constructor(pos) 
     {
         super(pos, vec2(18,8), "Start\nGame", -1, new Color(1,0,0), new Color(0.5,0,0));
     }
@@ -81,6 +72,8 @@ class SettingsButton extends Button {
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// helper functions
 function isDown() {
     return mouseIsDown(0)
 }

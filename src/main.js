@@ -6,13 +6,15 @@
 'use strict';
 import * as Objects from '../src/objects.js';
 
-// showWatermark = false;
-// showSplashScreen = true;
+if (!debug)
+{
+    showWatermark = false;
+    showSplashScreen = true;
+}
 
 let levelSize;
-let cursor;
-let startGameButton;
-let settingsButton;
+let cursor, font;
+let startGameButton, settingsButton;
 
 const Scene = {
     MainMenu: 0,
@@ -27,6 +29,7 @@ function gameInit()
 {
     // called once after the engine starts up
     // setup the game
+    font = new FontImage();
 
     canvasFixedSize = vec2(1280,720); //720p Landscape
     levelSize = vec2(1280,720);
@@ -46,13 +49,20 @@ function gameInit()
 function gameUpdate()
 {
     // called every frame at 60 frames per second
-    // // handle input and update the game state
+    // handle input and update the game state
 
     cursor.pos = mousePos;
 
-    if (startGameButton.selected) {
+    if (startGameButton.selected) 
+    {
         startGame();
         goToState(Scene.Game);
+    }
+
+    if (currentScreen === Scene.Game)
+    {
+        // init map
+        // init player
     }
 }
 
@@ -69,7 +79,6 @@ function gameRender()
 {
     // called before objects are rendered
     // draw any background effects that appear behind objects
-    const font = new FontImage();
 
     if (currentScreen === Scene.MainMenu) {
         
@@ -90,6 +99,7 @@ function gameRenderPost()
 }
 
 /////////////////////////////////////////////////////////////////////////////
+// helper functions
 function goToState(scene)
 {
     if (currentScreen !== scene)
@@ -106,6 +116,7 @@ function startGame()
         settingsButton.destroy();
     }
 
+    font.drawText("Hi", vec2(cameraPos.x, cameraPos.y + 10), 0.6, true);
     
 }
 /////////////////////////////////////////////////////////////////////////////
