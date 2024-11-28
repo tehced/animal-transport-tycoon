@@ -4,17 +4,16 @@
 */
 
 'use strict';
-import * as Objects from '../src/objects.js';
 
-if (!debug)
-{
-    showWatermark = false;
-    showSplashScreen = true;
-}
+import * as Player from '../src/player.js';
+import * as Global from '../src/global.js';
+import * as UI from '../src/ui.js';
+import * as World from '../src/world.js';
 
-let levelSize;
-let cursor, font;
-let startGameButton, settingsButton;
+// setShowSplashScreen(true);
+
+let player, HUD;
+let titleMenu;
 
 const Scene = {
     MainMenu: 0,
@@ -22,27 +21,34 @@ const Scene = {
     Settings: 2,
 }
 
-let currentScreen = Scene.MainMenu;
+const SceneKey = {
+    0: 'MainMenu',
+    1: 'Game',
+    2: 'Settings',
+}
+
+const GameState = {
+    Day: 0,
+    EndOfDay: 1,
+    Idle: 2,
+}
+
+let currentScene = Scene.MainMenu;
+let currentGameState = GameState.Idle;
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameInit()
 {
     // called once after the engine starts up
     // setup the game
-    font = new FontImage();
+    canvasMaxSize = vec2(1920,1080);
+    // canvasPixelated = true;
+    cameraPos = vec2(25,25);
+    // cameraScale = 25;
 
-    canvasFixedSize = vec2(1280,720); //720p Landscape
-    levelSize = vec2(1280,720);
-    cameraPos = levelSize.scale(0.5);
-    cameraScale = 16;
-    cursor = new Objects.Cursor(vec2(levelSize.x / 2, levelSize.y / 2));
+    initUISystem();
+    titleMenu = UI.buildTitleMenu();
 
-    if (currentScreen === Scene.MainMenu)
-    {
-        startGameButton = new Objects.StartButton(vec2(cameraPos.x, cameraPos.y - 2));
-        settingsButton = new Objects.SettingsButton(vec2(cameraPos.x, cameraPos.y - 12));
-    }
-    
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,19 +57,32 @@ function gameUpdate()
     // called every frame at 60 frames per second
     // handle input and update the game state
 
-    cursor.pos = mousePos;
-
-    if (startGameButton.selected) 
+    if (currentScene === Scene.MainMenu)
     {
-        startGame();
-        goToState(Scene.Game);
+        titleMenu.visible = true;
     }
 
-    if (currentScreen === Scene.Game)
+    if (currentScene === Scene.Settings)
     {
-        // init map
-        // init player
+        settingsMenu.visible = true;
     }
+
+    if (currentScene === Scene.Game)
+        if (currentGameState === GameState.Day)
+            if (Global.getFormattedDayTimer() < formatTime(1))
+            {
+                HUD.visible = !HUD.visible;
+                goToGameState(GameState.EndOfDay);
+            } else {
+                UI.updateHUD(HUD, player);
+            }
+        if (currentGameState === GameState.EndOfDay)
+        {
+            console.log('Day ended!');
+            startNewDay(player);
+            HUD.visible = !HUD.visbile;
+            goToGameState(GameState.Day);
+        }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -71,7 +90,7 @@ function gameUpdatePost()
 {
     // called after physics and objects are updated
     // setup camera and prepare for render
-    
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,47 +98,63 @@ function gameRender()
 {
     // called before objects are rendered
     // draw any background effects that appear behind objects
-
-    if (currentScreen === Scene.MainMenu) {
-        
-        font.drawText("Animal\nTransport\nTycoon", vec2(cameraPos.x, cameraPos.y + 20), 0.6, true);
-        
-        // drawTile(vec2(cameraPos.x, cameraPos.y + 16 + Math.sin(timeReal)), vec2(12), 1, tileSizeDefault, new Color(1,1,1,1), 0, 0, new Color(0,0,0,0), true);
-
-        return;
-    }
+    
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameRenderPost()
 {
     // called after objects are rendered
-    // // draw effects or hud that appear above all objects
-    
+    // draw effects or hud that appear above all objects
+
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // helper functions
-function goToState(scene)
+function goToMenuState(scene)
 {
-    if (currentScreen !== scene)
+    if (currentScene !== scene)
     {
-        currentScreen = scene;
+        currentScene = scene;
     }
 }
 
-function startGame()
+function goToGameState(state)
 {
-    if (currentScreen === Scene.MainMenu)
+    if (currentGameState !== state)
     {
-        startGameButton.destroy();
-        settingsButton.destroy();
+        currentGameState = state;
     }
-
-    font.drawText("Hi", vec2(cameraPos.x, cameraPos.y + 10), 0.6, true);
-    
 }
-/////////////////////////////////////////////////////////////////////////////
+
+function startNewGame()
+{
+    titleMenu.visible = !titleMenu.visible;
+    goToMenuState(Scene.Game);
+    goToGameState(GameState.Day);
+    initPlayer();
+    startNewDay(player);
+    World.loadLevel(0);
+}
+
+function initPlayer()
+{
+    player = new Player.Player();
+    HUD = UI.buildPlayerHUD();
+}
+
+function startNewDay(player)
+{
+    Global.startDayTimer();
+    player.day += 1;
+    UI.updateHUD(HUD, player);
+}
+
+export
+{
+    startNewGame,
+    goToMenuState,
+}
 
 // Startup LittleJS Engine
-engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost);
+engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, ['src/tiles.png']);

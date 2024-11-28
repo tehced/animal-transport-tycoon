@@ -1,4 +1,5 @@
-class Cursor extends EngineObject {
+class Cursor extends EngineObject 
+{
     constructor(pos)
     {
         super(pos, vec2(0));
@@ -8,7 +9,8 @@ class Cursor extends EngineObject {
     }
 }
 
-class Button extends EngineObject {
+class Button extends EngineObject 
+{
     constructor(pos, size, text, number, color, backgroundColor)
     {
         super(pos, size);
@@ -33,7 +35,7 @@ class Button extends EngineObject {
 
         drawRect(vec2(this.pos.x, this.pos.y), this.size, this.backgroundColor, 0, false);
         drawRect(vec2(this.pos.x, this.pos.y), vec2(this.size.x - 1, this.size.y - 1), this.color, 0, false);
-        this.font.drawText(this.text, vec2(this.pos.x, this.pos.y + 1.5), 0.2, true);
+        this.font.drawText(this.text, vec2(this.pos.x, this.pos.y + 1), 0.2, true);
         if (this.number > -1) {
             this.font.drawText(this.number.toString(), vec2(this.pos.x + 5, this.pos.y - 1), 0.2, true);
         }
@@ -58,17 +60,27 @@ class Button extends EngineObject {
     }
 }
 
-class StartButton extends Button {
+class StartButton extends Button 
+{
     constructor(pos) 
     {
-        super(pos, vec2(18,8), "Start\nGame", -1, new Color(1,0,0), new Color(0.5,0,0));
+        super(pos, vec2(18,8), "New Game", -1, new Color(1,0,0), new Color(0.5,0,0));
     }
 }
 
-class SettingsButton extends Button {
+class SettingsButton extends Button 
+{
     constructor(pos)
     {
         super(pos, vec2(18,8), "Settings", -1, new Color(1,0,0), new Color(0.5,0,0));
+    }
+}
+
+class BackButton extends Button
+{
+    constructor(pos)
+    {
+        super(pos, vec2(9,4), "Back", -1, new Color(1,0,0), new Color(0.5,0,0));
     }
 }
 
@@ -87,5 +99,6 @@ export {
     Cursor,
     Button,
     StartButton,
-    SettingsButton
+    SettingsButton,
+    BackButton
 }
