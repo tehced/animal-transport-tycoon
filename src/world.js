@@ -11,10 +11,10 @@ const getTileData = (pos, layer)=>
 
 function loadLevel(level)
 {
+    const sky = new Sky;
     //Loads level from a Tiled JS file
     const dataName = Object.keys(TileMaps)[level];
     const tileMapData = TileMaps[dataName];
-    console.log(tileMapData);
     levelSize = vec2(tileMapData.width, tileMapData.height);
     initTileCollision(levelSize);
 
@@ -25,7 +25,7 @@ function loadLevel(level)
     for (let layer = layerCount; layer--;)
     {
         const layerData = tileMapData.layers[layer].data;
-        const tileLayer = new TileLayer(vec2(), levelSize, tile(1));
+        const tileLayer = new TileLayer(vec2(), levelSize, tile(0));
         tileLayer.renderOrder = -1e3+layer;
         tileLayers[layer] = tileLayer;
         tileData[layer] = [];
@@ -38,14 +38,53 @@ function loadLevel(level)
 
             setTileData(pos, layer, tile);
 
-            // setTileCollisionData(pos, 1);
-            const data = new TileLayerData(tile-1)
+            const data = new TileLayerData(tile-1, 0, false)
             tileLayer.setData(pos, data);
         }
         tileLayer.redraw();
     }
 }
+///////////////////////////////////////////////////////////////////////////////
+class Sky extends EngineObject
+{
+    constructor() 
+    {
+        super();
 
+        this.renderOrder = -1e4;
+        // this.seed = randInt(1e9);
+        this.skyColor = WHITE;
+        this.horizonColor = CYAN;
+    }
 
+    render()
+    {
+        // fill background with a gradient
+        const gradient = mainContext.createLinearGradient(0, 0, 0, mainCanvas.height);
+        gradient.addColorStop(0, this.skyColor);
+        gradient.addColorStop(1, this.horizonColor);
+        mainContext.save();
+        mainContext.fillStyle = gradient;
+        mainContext.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
+        mainContext.globalCompositeOperation = 'lighter';
+        
+        // // draw stars
+        // const random = new RandomGenerator(this.seed);
+        // for (let i=1e3; i--;)
+        // {
+        //     const size = random.float(.5,2)**2;
+        //     const speed = random.float() < .9 ? random.float(5) : random.float(9,99);
+        //     const color = hsl(random.float(-.3,.2), random.float(), random.float());
+        //     const extraSpace = 50;
+        //     const w = mainCanvas.width+2*extraSpace, h = mainCanvas.height+2*extraSpace;
+        //     const screenPos = vec2(
+        //         (random.float(w)+time*speed)%w-extraSpace,
+        //         (random.float(h)+time*speed*random.float())%h-extraSpace);
+        //     mainContext.fillStyle = color;
+        //     mainContext.fillRect(screenPos.x, screenPos.y, size, size);
+        // }
+        mainContext.restore();
+    }
+}
 
-export { loadLevel }
+export { loadLevel, Sky, getTileData, setTileData }

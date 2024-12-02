@@ -10,7 +10,6 @@
 'use strict';
 
 ///////////////////////////////////////////////////////////////////////////////
-
 // ui defaults
 let uiDefaultColor       = WHITE;
 let uiDefaultLineColor   = BLACK;
@@ -18,8 +17,7 @@ let uiDefaultTextColor   = BLACK;
 let uiDefaultButtonColor = hsl(0,0,.5);
 let uiDefaultHoverColor  = hsl(0,0,.7);
 let uiDefaultLineWidth   = 4;
-// let uiDefaultFont        = 'arial';
-let uiDefaultFont = 'calibri';
+let uiDefaultFont        = 'monospace';
 
 // ui system
 let uiObjects = [];
@@ -83,14 +81,16 @@ function drawUILine(posA, posB, thickness=uiDefaultLineWidth, color=uiDefaultLin
     uiContext.stroke();
 }
 
-function drawUITile(pos, size, tileInfo, color=uiDefaultColor, angle=0, mirror=false, additiveColor=BLACK)
+function drawUITile(pos, size, tileInfo, color=uiDefaultColor, angle=0, mirror=false, additiveColor=TRANSPARENT)
 {
-    drawTile(pos, size, tileInfo, color, angle, mirror, additiveColor, false, true, uiContext);
+    drawTile(pos, size, tileInfo, color, angle, mirror, additiveColor, true, true, uiContext);
 }
 
 function drawUIText(text, pos, size, color=uiDefaultColor, lineWidth=uiDefaultLineWidth, lineColor=uiDefaultLineColor, align='center', font=uiDefaultFont)
 {
-    drawTextScreen(text, pos, size.y, color, lineWidth, lineColor, align, font, uiContext, size.x);
+    // console.log(font)
+    drawTextScreen(text, pos, size.y, color, lineWidth, lineColor, align, uiDefaultFont, uiContext, size.x);
+    // font.drawTextScreen(text, pos, size.y/10, true);
 }
     
 
@@ -168,7 +168,7 @@ class UIObject
 
 class UIText extends UIObject
 {
-    constructor(pos, size, text, screen=false, align='center', font=uiDefaultFont)
+    constructor(pos, size, text, align='center', font=uiDefaultFont)
     {
         super(pos, size);
 
@@ -187,7 +187,7 @@ class UIText extends UIObject
 
 class UITile extends UIObject
 {
-    constructor(pos, size, tileInfo, color=WHITE, angle=0, mirror=false, additiveColor=BLACK)
+    constructor(pos, size, tileInfo, color=WHITE, angle=0, mirror=false, additiveColor=TRANSPARENT)
     {
         super(pos, size);
 
@@ -207,19 +207,23 @@ class UITile extends UIObject
 
 class UIButton extends UIObject
 {
-    constructor(pos, size, text)
+    constructor(pos, size, text, color, lineWidth, textColor, hoverColor)
     {
         super(pos, size);
         this.text = text;
-        this.color = uiDefaultButtonColor;
+        this.color = color;
+        this.lineWidth = lineWidth;
+        this.textColor = textColor;
+        this.hoverColor = hoverColor;
     }
     render()
     {
         const lineColor = this.mouseIsHeld ? this.color : this.lineColor;
-        const color = this.mouseIsOver? this.hoverColor : this.color;
+        const color = this.mouseIsOver ? this.hoverColor : this.color;
         drawUIRect(this.pos, this.size, color, this.lineWidth, lineColor);
-        drawTextScreen(this.text, this.pos, this.size.y*.8, 
+        drawTextScreen(this.text, this.pos, this.size.y*.8,
             this.textColor, undefined, undefined, this.align, this.font, uiContext);
+        // this.font.drawTextScreen(this.text, vec2(this.pos.x, this.pos.y-10), 3, true);
     }
 }
 

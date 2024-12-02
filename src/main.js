@@ -5,15 +5,26 @@
 
 'use strict';
 
-import * as Player from '../src/player.js';
-import * as Global from '../src/global.js';
-import * as UI from '../src/ui.js';
-import * as World from '../src/world.js';
-
+// enableAsserts = true;
 // setShowSplashScreen(true);
 
+import * as Player from './player.js';
+import * as UI from './ui.js';
+import * as World from './world.js';
+
+import { GLOBAL, getFormattedDayTimer, incrementDay, startDayTimer } from './global.js';
+import { inputManager } from './input.js';
+import { Wolf } from './units/wolf.js';
+
+let font;
+
 let player, HUD;
-let titleMenu;
+let titleMenu, endOfDaySummaryMenu;
+let settingsMenu;
+
+let world, input;
+
+let wolf;
 
 const Scene = {
     MainMenu: 0,
@@ -39,16 +50,26 @@ let currentGameState = GameState.Idle;
 ///////////////////////////////////////////////////////////////////////////////
 function gameInit()
 {
+    
     // called once after the engine starts up
     // setup the game
+
     canvasMaxSize = vec2(1920,1080);
-    // canvasPixelated = true;
     cameraPos = vec2(25,25);
-    // cameraScale = 25;
+    cameraScale = min(60, 60 * mainCanvas.width / 700);
+    // centers camera
+    GLOBAL.desiredCameraPos = cameraPos;
 
     initUISystem();
-    titleMenu = UI.buildTitleMenu();
 
+    titleMenu = UI.buildTitleMenu();
+    settingsMenu = UI.buildSettingsMenu();
+    endOfDaySummaryMenu = UI.buildEndOfDayPopup();
+
+    settingsMenu.visible = false;
+    endOfDaySummaryMenu.visible = false;
+
+    input = new inputManager;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -60,28 +81,47 @@ function gameUpdate()
     if (currentScene === Scene.MainMenu)
     {
         titleMenu.visible = true;
+        settingsMenu.visible = false;
     }
 
     if (currentScene === Scene.Settings)
     {
+        titleMenu.visible = false;
         settingsMenu.visible = true;
     }
 
     if (currentScene === Scene.Game)
         if (currentGameState === GameState.Day)
-            if (Global.getFormattedDayTimer() < formatTime(1))
+        {
+            GLOBAL.desiredCameraPos = cameraPos;
+            if (getFormattedDayTimer() < formatTime(1))
             {
-                HUD.visible = !HUD.visible;
+                HUD.visible = false;
                 goToGameState(GameState.EndOfDay);
             } else {
-                UI.updateHUD(HUD, player);
+                UI.updateHUD(HUD);
+                input.update();
+                if (!wolf) {
+                    wolf = new Wolf(vec2(25,25));
+                    wolf.onClick = () =>
+                    {
+                        console.log('push');
+                    }
+                }
             }
+        }
         if (currentGameState === GameState.EndOfDay)
         {
-            console.log('Day ended!');
-            startNewDay(player);
-            HUD.visible = !HUD.visbile;
-            goToGameState(GameState.Day);
+            if (endOfDaySummaryMenu.visible === false){
+                console.log('Day ended!');
+                endOfDaySummaryMenu.visible = true;
+                goToGameState(GameState.Idle);
+            }
+   
+        }
+        if (currentGameState === GameState.Idle)
+        {
+            return;
         }
 }
 
@@ -90,6 +130,16 @@ function gameUpdatePost()
 {
     // called after physics and objects are updated
     // setup camera and prepare for render
+    if (currentGameState === GameState.Day)
+    {    
+        if (cameraPos != GLOBAL.desiredCameraPos) {
+            const diff = GLOBAL.desiredCameraPos.subtract(cameraPos);
+            if (diff.length() < .2) {
+                GLOBAL.desiredCameraPos = cameraPos;
+            }
+            cameraPos = cameraPos.add(diff.clampLength(diff.length()/10))
+        }
+    }
 
 }
 
@@ -127,14 +177,20 @@ function goToGameState(state)
     }
 }
 
+function buildWorld()
+{
+    world = World.loadLevel(0);
+    // TileLayer.visible = false;
+}
+
 function startNewGame()
 {
     titleMenu.visible = !titleMenu.visible;
     goToMenuState(Scene.Game);
     goToGameState(GameState.Day);
     initPlayer();
-    startNewDay(player);
-    World.loadLevel(0);
+    startNewDay();
+    buildWorld();
 }
 
 function initPlayer()
@@ -143,18 +199,24 @@ function initPlayer()
     HUD = UI.buildPlayerHUD();
 }
 
-function startNewDay(player)
+function startNewDay()
 {
-    Global.startDayTimer();
-    player.day += 1;
-    UI.updateHUD(HUD, player);
+    HUD.visible = true;
+    startDayTimer();
+    incrementDay();
 }
 
 export
 {
+    currentScene,
+    currentGameState,
+    Scene,
+    GameState,
     startNewGame,
+    startNewDay,
     goToMenuState,
+    goToGameState,
 }
 
 // Startup LittleJS Engine
-engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, ['src/tiles.png']);
+engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, ['src/assets/tiles.png', 'src/assets/ui.png', 'src/assets/hud.png', 'src/assets/wolf.png']);

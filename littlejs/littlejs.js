@@ -24,7 +24,7 @@ const debug = true;
  *  @type {Boolean}
  *  @default
  *  @memberof Debug */
-const enableAsserts = true;
+const enableAsserts = false;
 
 /** Size to render debug points by default
  *  @type {Number}
@@ -1221,6 +1221,10 @@ class Color
 
 ///////////////////////////////////////////////////////////////////////////////
 // default colors
+/** Color - Transparent 
+ * @type {Color}
+ * @memberof Utilities */
+const TRANSPARENT = rgb(0,0,0,0);
 
 /** Color - White
  *  @type {Color}
@@ -1378,7 +1382,7 @@ let canvasPixelated = true;
  *  @type {String}
  *  @default
  *  @memberof Settings */
-let fontDefault = 'arial';
+let fontDefault = 'calibri';
 
 /** Enable to show the LittleJS splash screen be shown on startup
  *  @type {Boolean}
