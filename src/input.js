@@ -24,27 +24,24 @@ class inputManager extends EngineObject {
             }
             if (mouseWasPressed(2))
             {
-                clearInput();
                 this.isDragging = true;
                 this.dragTimer.set(1);
                 this.lastMousePos = mousePos.copy();
             } else if (mouseWasReleased(2)) {
-                clearInput();
                 this.isDragging = false;
                 this.dragDelta = vec2();
             }
 
             if (this.isDragging)
             {
-                clearInput();
                 this.dragDelta = mousePos.subtract(this.lastMousePos);
                 GLOBAL.desiredCameraPos = GLOBAL.desiredCameraPos.subtract(this.dragDelta);
             }
-        
+
             cameraScale -= mouseWheel*ZOOM_FACTOR;
             cameraScale = clamp(cameraScale, 1, 100);
+
         } else {
-            clearInput();
             this.isDragging = false;
             this.dragDelta = vec2();
         }

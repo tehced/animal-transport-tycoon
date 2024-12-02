@@ -25,7 +25,7 @@ const COLORS = {
 
 function startDayTimer()
 {
-    return GLOBAL.dayTimer.set(60);
+    return GLOBAL.dayTimer.set(5);
 }
 
 function getFormattedDayTimer()

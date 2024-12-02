@@ -37,8 +37,9 @@ function loadLevel(level)
             const tile = layerData[y*levelSize.x+x];
 
             setTileData(pos, layer, tile);
-
-            const data = new TileLayerData(tile-1, 0, false)
+            
+            const data = new TileLayerData(tile-1, 0, false);
+            setTileCollisionData(pos, data);
             tileLayer.setData(pos, data);
         }
         tileLayer.redraw();
@@ -52,7 +53,6 @@ class Sky extends EngineObject
         super();
 
         this.renderOrder = -1e4;
-        // this.seed = randInt(1e9);
         this.skyColor = WHITE;
         this.horizonColor = CYAN;
     }

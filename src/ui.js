@@ -76,7 +76,7 @@ function buildSettingsMenu()
 
 function buildPlayerHUD()
 {
-    let uiRoot = new UIObject(vec2(mainCanvasSize.x/2,0));
+    let uiRoot = new UIObject(vec2(canvasFixedSize.x/2,0));
 
     const uiBackground = new UITile(vec2(0,0),vec2(624*3,320*.6),tile(0,vec2(624,32),2));
     // const uiBackground = new drawUIRect
@@ -93,13 +93,27 @@ function buildPlayerHUD()
     return uiRoot;
 }
 
+function buildActionPanel()
+{
+    let uiRoot = new UIObject(vec2(64,0));
+
+    const uiMenu = new UIObject(vec2(0,200));
+    uiRoot.addChild(uiMenu);
+
+    // const testButton = new UIButton(vec2(0, 20), vec2(64,64), 'test', defaultButtonColor, defaultLineWidth, defaultTextColor, defaultHoverColor);
+    // uiMenu.addChild(testButton);
+
+    return uiRoot;
+}
+
+
 function buildEndOfDayPopup()
 {
-    let uiRoot = new UIObject(vec2(mainCanvasSize.x/2,mainCanvasSize.y/2));
+    let uiRoot = new UIObject(vec2(canvasFixedSize.x/2,canvasFixedSize.y/2));
 
     const uiBackground = new UITile(vec2(0,0),vec2(896,896),tile(0,128,1));
     const uiTitle = new UIText(vec2(0,-350), vec2(1e3,40),
-    'Summary: ', 'center', main.font);
+    'Summary: ');
 
     const continueToNewDayButton = new UIButton(vec2(0,230), vec2(350,70), 'Continue', defaultButtonColor, defaultLineWidth, defaultTextColor, defaultHoverColor);
     continueToNewDayButton.onPress = () =>
@@ -140,6 +154,7 @@ export
     buildTitleMenu,
     buildSettingsMenu,
     buildPlayerHUD,
+    buildActionPanel,
     buildEndOfDayPopup,
     updateHUD,
 }

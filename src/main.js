@@ -16,9 +16,7 @@ import { GLOBAL, getFormattedDayTimer, incrementDay, startDayTimer } from './glo
 import { inputManager } from './input.js';
 import { Wolf } from './units/wolf.js';
 
-let font;
-
-let player, HUD;
+let player, HUD, actionPanel;
 let titleMenu, endOfDaySummaryMenu;
 let settingsMenu;
 
@@ -55,8 +53,10 @@ function gameInit()
     // setup the game
 
     canvasMaxSize = vec2(1920,1080);
+    canvasFixedSize = vec2(1920,953);
     cameraPos = vec2(25,25);
-    cameraScale = min(60, 60 * mainCanvas.width / 700);
+    cameraScale = min(60, 60 * mainCanvas.width);
+
     // centers camera
     GLOBAL.desiredCameraPos = cameraPos;
 
@@ -69,7 +69,7 @@ function gameInit()
     settingsMenu.visible = false;
     endOfDaySummaryMenu.visible = false;
 
-    input = new inputManager;
+    input = new inputManager();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -99,14 +99,10 @@ function gameUpdate()
                 HUD.visible = false;
                 goToGameState(GameState.EndOfDay);
             } else {
+                
                 UI.updateHUD(HUD);
-                input.update();
                 if (!wolf) {
                     wolf = new Wolf(vec2(25,25));
-                    wolf.onClick = () =>
-                    {
-                        console.log('push');
-                    }
                 }
             }
         }
@@ -179,8 +175,7 @@ function goToGameState(state)
 
 function buildWorld()
 {
-    world = World.loadLevel(0);
-    // TileLayer.visible = false;
+    World.loadLevel(0);
 }
 
 function startNewGame()
@@ -197,6 +192,7 @@ function initPlayer()
 {
     player = new Player.Player();
     HUD = UI.buildPlayerHUD();
+    actionPanel = UI.buildActionPanel();
 }
 
 function startNewDay()
