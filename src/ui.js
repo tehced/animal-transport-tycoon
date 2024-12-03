@@ -1,4 +1,4 @@
-import * as main from '../src/main.js';
+import { startNewGame, startNewDay, goToGameState, GameState, goToMenuState, Scene } from './main.js';
 import { GLOBAL, COLORS, getFormattedDayTimer } from'./global.js';
 
 //defaults
@@ -12,7 +12,7 @@ const sound_click = new Sound([1,0]);
 
 function buildTitleMenu()
 {
-    let uiRoot = new UIObject(vec2(mainCanvasSize.x/2,0));
+    let uiRoot = new UIObject(vec2(canvasFixedSize.x/2,0));
 
     const uiTitle = new UIText(vec2(0, 100), vec2(1e3, 100),
     'Little\nAnimal\nTransport');
@@ -31,7 +31,7 @@ function buildTitleMenu()
         if (GLOBAL.soundFxMaster){
             sound_click.play(vec2(0,0), GLOBAL.soundFxVolume);
         }
-        main.startNewGame();
+        startNewGame();
     }
 
     const settingsButton = new UIButton(vec2(0,startNewGameButton.pos.y+80), vec2(350,70), 'Settings', defaultButtonColor, defaultLineWidth, defaultTextColor, defaultHoverColor);
@@ -42,7 +42,7 @@ function buildTitleMenu()
         if (GLOBAL.soundFxMaster){
             sound_click.play(vec2(0,0), GLOBAL.soundFxVolume);
         }
-        main.goToMenuState(main.Scene.Settings);
+        goToMenuState(Scene.Settings);
     }
 
     return uiRoot;
@@ -50,7 +50,7 @@ function buildTitleMenu()
 
 function buildSettingsMenu()
 {
-    let uiRoot = new UIObject(vec2(mainCanvasSize.x/2,0));
+    let uiRoot = new UIObject(vec2(canvasFixedSize.x/2,0));
 
     const uiTitle = new UIText(vec2(0, 100), vec2(1e3, 70),
             'Settings');
@@ -68,7 +68,7 @@ function buildSettingsMenu()
         if (GLOBAL.soundFxMaster){
             sound_click.play(vec2(0,0), GLOBAL.soundFxVolume);
         }
-        main.goToMenuState(main.Scene.MainMenu);
+        goToMenuState(Scene.MainMenu);
     }
 
     return uiRoot;
@@ -98,10 +98,18 @@ function buildActionPanel()
     let uiRoot = new UIObject(vec2(64,0));
 
     const uiMenu = new UIObject(vec2(0,200));
-    uiRoot.addChild(uiMenu);
 
-    // const testButton = new UIButton(vec2(0, 20), vec2(64,64), 'test', defaultButtonColor, defaultLineWidth, defaultTextColor, defaultHoverColor);
-    // uiMenu.addChild(testButton);
+    const testButton = new UITile(vec2(0,20), vec2(64,64), tile(0, 32, 4));
+    testButton.onClick = () =>
+    {
+        testButton.selected = true;
+        console.log(testButton.selected);
+    }
+    const buttonBackground = new UIObject(vec2(0,20), vec2(64,64));
+
+    uiRoot.addChild(uiMenu);
+    uiMenu.addChild(testButton);
+    uiMenu.addChild(buttonBackground);
 
     return uiRoot;
 }
@@ -123,8 +131,8 @@ function buildEndOfDayPopup()
         }
         uiRoot.visible = false;
         
-        main.goToGameState(main.GameState.Day);
-        main.startNewDay();
+        goToGameState(GameState.Day);
+        startNewDay();
     }
 
     uiRoot.addChild(uiBackground);
@@ -151,6 +159,7 @@ function updateHUD(HUD)
 
 export
 {
+    getChild,
     buildTitleMenu,
     buildSettingsMenu,
     buildPlayerHUD,

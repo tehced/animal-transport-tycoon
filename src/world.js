@@ -39,7 +39,7 @@ function loadLevel(level)
             setTileData(pos, layer, tile);
             
             const data = new TileLayerData(tile-1, 0, false);
-            setTileCollisionData(pos, data);
+            // setTileCollisionData(pos, data);
             tileLayer.setData(pos, data);
         }
         tileLayer.redraw();
