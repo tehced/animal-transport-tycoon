@@ -1,5 +1,6 @@
 import { GLOBAL } from "./global.js";
-import { currentGameState, GameState } from "./main.js";
+import { getChild } from "./ui.js";
+import { currentGameState, GameState, actionPanel } from "./main.js";
 import { getTileData } from "./world.js";
 
 const ZOOM_FACTOR = 2;
@@ -20,7 +21,13 @@ class inputManager extends EngineObject {
         {
             if (mouseWasPressed(0))
             {
-                console.log(getTileData(mousePos, 0));
+                let button = getChild(actionPanel)[0].children[0];
+                if (button.selected === false)
+                {
+                    console.log(getTileData(mousePos, 0));
+                } else {
+                    button.selected = false;
+                }
             }
             if (mouseWasPressed(2))
             {

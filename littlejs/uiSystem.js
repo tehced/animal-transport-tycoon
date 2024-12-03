@@ -111,6 +111,7 @@ class UIObject
         this.lineWidth  = uiDefaultLineWidth;
         this.font       = uiDefaultFont;
         this.visible = true;
+        this.selected = false;
         this.children = [];
         this.parent = null;
         uiObjects.push(this);

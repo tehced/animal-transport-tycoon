@@ -208,6 +208,7 @@ export
     currentGameState,
     Scene,
     GameState,
+    actionPanel,
     startNewGame,
     startNewDay,
     goToMenuState,
@@ -215,4 +216,4 @@ export
 }
 
 // Startup LittleJS Engine
-engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, ['src/assets/tiles.png', 'src/assets/ui.png', 'src/assets/hud.png', 'src/assets/wolf.png']);
+engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, ['src/assets/tiles.png', 'src/assets/ui.png', 'src/assets/hud.png', 'src/assets/wolf.png', 'src/assets/objects.png']);
